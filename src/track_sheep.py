@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 import urllib.request
 import csv
 import os
+import time 
 
 
 url_export = 'https://data.stad.gent/explore/dataset/sheep-tracking-gent/export/'
@@ -32,14 +33,23 @@ data = eval((geo['features'][0]['properties']['data']))
 print(geo['features'][0]['properties']['lat'])
 print(geo['features'][0]['properties']['lng'])
 
+# get current local time 
+t = time.localtime()
+now = time.strftime('%Y:%D:%H:%M:%S', t)
+print(now)
 
 # collect values in csv file 
-csv_file_path = r'..\csv\sheep_whereabouts.csv'
+os.chdir(r'C:\Users\maart\Documents\myProjects\sheep')
+folder_path = r'csv'
+if not os.path.isdir(folder_path):
+    os.mkdir(folder_path)
+csv_file_path = os.path.join(folder_path, 'sheep_whereabouts.csv')
 write_header = not os.path.isfile(csv_file_path)
+
 with open(csv_file_path, 'a', newline='') as sw:
     writer_object = csv.writer(sw)
     if write_header:
-        writer_object.writerow(["time", "latitude", "longitude"])
-    writer_object.writerow([data['time'], geo['features'][0]['properties']['lat'], geo['features'][0]['properties']['lng']])
+        writer_object.writerow(['scrape time', "time", "latitude", "longitude"])
+    writer_object.writerow([now, data['time'], geo['features'][0]['properties']['lat'], geo['features'][0]['properties']['lng']])
     sw.close()
     
