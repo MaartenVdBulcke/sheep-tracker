@@ -1,4 +1,5 @@
-from sheep_scraper import SheepScraper
+from scrape import SheepScraper
+
 
 if __name__=='__main__':
     find_them = SheepScraper()
