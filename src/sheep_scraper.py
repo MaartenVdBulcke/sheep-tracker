@@ -14,7 +14,6 @@ class SheepScraper:
     FOLDER_PATH = r'csv'
     FILENAME = r'sheep_whereabouts.csv'
 
-
     def __init__(self):
         self.geojson: Optional[dict] = None
         self.nowtime: Optional[str] = None
@@ -30,10 +29,7 @@ class SheepScraper:
         self.geojson = eval((geo['features'][0]['properties']['data']))
 
     def append_to_the_herd_history(self):
-        os.chdir(SheepScraper.CWD)
-        if not os.path.isdir(SheepScraper.FOLDER_PATH):
-            os.mkdir(SheepScraper.FOLDER_PATH)
-        csv_file_path = os.path.join(SheepScraper.FOLDER_PATH, SheepScraper.FILENAME)
+        csv_file_path = SheepScraper.__fix_path()
         write_header = not os.path.isfile(csv_file_path)
 
         with open(csv_file_path, 'a', newline='') as sheep_history:
@@ -57,6 +53,13 @@ class SheepScraper:
             
             sheep_history.close()
     
+    @staticmethod
+    def __fix_path():
+        os.chdir(SheepScraper.CWD)
+        if not os.path.isdir(SheepScraper.FOLDER_PATH):
+            os.mkdir(SheepScraper.FOLDER_PATH)
+        return os.path.join(SheepScraper.FOLDER_PATH, SheepScraper.FILENAME)
+
     def __freeze_now_time(self):
         t = time.localtime()
         self.nowtime = time.strftime('%Y %b %d, %H:%M:%S', t)
