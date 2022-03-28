@@ -15,8 +15,7 @@ class SheepScraper:
     FILENAME = r'sheep_whereabouts.csv'
 
     def __init__(self):
-        self.geojson: Optional[dict] = None
-        self.nowtime: Optional[str] = None
+        pass
 
     def scrape_geojson(self):
         driver = webdriver.Chrome()
@@ -26,7 +25,7 @@ class SheepScraper:
         file = urllib.request.urlopen(href)
         geo = eval(file.read().decode('utf-8'))
         driver.quit()
-        self.geojson = eval((geo['features'][0]['properties']['data']))
+        self.geojson: dict = eval((geo['features'][0]['properties']['data']))
 
     def append_to_the_herd_history(self):
         csv_file_path = SheepScraper.__fix_path()
@@ -62,5 +61,5 @@ class SheepScraper:
 
     def __freeze_now_time(self):
         t = time.localtime()
-        self.nowtime = time.strftime('%Y %b %d, %H:%M:%S', t)
+        self.nowtime: str = time.strftime('%Y %b %d, %H:%M:%S', t)
     
