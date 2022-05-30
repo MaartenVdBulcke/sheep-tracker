@@ -4,3 +4,5 @@ src/__pycache__
 
 # filetypes
 *.exe
+src/mappify/cache
+src/scrape/__pycache__
