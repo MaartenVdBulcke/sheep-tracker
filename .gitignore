@@ -6,3 +6,5 @@ src/__pycache__
 *.exe
 src/mappify/cache
 src/scrape/__pycache__
+src/mappify/print/gooik.png
+src/mappify/print/strijland.png
