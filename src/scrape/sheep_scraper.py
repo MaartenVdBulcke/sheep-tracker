@@ -1,26 +1,30 @@
+import os
+from pathlib import Path
+import time 
 import urllib.request
 import csv
-import os
-import time 
-from typing import Optional
-
 from .driver import Driver
 
 
 class SheepScraper:
-    """
-    Class that interacts dynamically with the sheep whereabouts dataset 
-    and stores the data in a csv-file.
-    """
+    """Class that interacts dynamically with the sheep whereabouts dataset 
+    and stores the data in a csv-file."""
     
     SHEEP_DATA_URL = r'https://data.stad.gent/explore/dataset/sheep-tracking-gent/export/'
-    CWD = r'C:\Users\maart\Documents\myProjects\sheep'
-    FOLDER_PATH = r'csv'
-    FILENAME = r'sheep_whereabouts.csv'
 
     def __init__(self):
+        self.csv_path = self._get_csv_path()
         self.driver: Driver = Driver(SheepScraper.SHEEP_DATA_URL)
-        self.geodata: Optional[dict] = None
+        self.geodata: dict = {}
+
+    def _get_csv_path(self, folder_path: str = 'csv', filename: str = 'sheep_whereabouts.csv'):
+        """Assures csv_path is stable (also when script is run from batch file)"""
+        scrape_path = Path(os.path.abspath(os.path.dirname(__file__)))
+        root = os.path.abspath(scrape_path.parent.parent)
+        os.chdir(root)
+        if not os.path.isdir(folder_path):
+            os.mkdir(folder_path)
+        return os.path.join(folder_path, filename)
 
     def scrape_geojson_data(self):
         geojson_webelement = self.driver.get_geojson_webelement()
@@ -30,9 +34,8 @@ class SheepScraper:
         self.geodata = eval((geo_info['features'][0]['properties']['data']))
 
     def append_to_the_herd_history(self):
-        csv_file_path = SheepScraper._fix_path()
-        write_header = not os.path.isfile(csv_file_path)
-        with open(csv_file_path, 'a', newline='') as sheep_history:
+        write_header = not os.path.isfile(self.csv_path)
+        with open(self.csv_path, 'a', newline='') as sheep_history:
             writer_object = csv.writer(sheep_history)
             if write_header:
                 writer_object.writerow([
@@ -47,14 +50,6 @@ class SheepScraper:
     
     def quit_selenium_driver(self):
         self.driver.quit()
-    
-    @staticmethod
-    def _fix_path():
-        """Assures working directory is stable (also when script is run from batch file)"""
-        os.chdir(SheepScraper.CWD)
-        if not os.path.isdir(SheepScraper.FOLDER_PATH):
-            os.mkdir(SheepScraper.FOLDER_PATH)
-        return os.path.join(SheepScraper.FOLDER_PATH, SheepScraper.FILENAME)
     
     @staticmethod
     def _get_time() -> str:
